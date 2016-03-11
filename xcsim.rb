@@ -381,7 +381,18 @@ end
 
 bundleID = options[:bundle]
 bundleInfos = parseInstalledBundles(device)
-bundle = bundleInfos[bundleID]
+bnulde = nil
+
+if bundleID != nil
+    matchingBundles = bundleInfos.values.select{ |bundle| bundle.bundleID.end_with? bundleID }
+
+    if matchingBundles.count > 1
+        puts "Multiple bundles matching ID '#{bundleID}' found: #{matchingBundles}!"
+        exit 1
+    elsif matchingBundles.count == 1
+        bundle = matchingBundles.first
+    end
+end
 
 if bundle == nil
     unless bundleID == nil
