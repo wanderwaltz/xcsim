@@ -429,34 +429,48 @@ def list_matching(string)
 
   matchingOSes ||= matching_oses(osPattern)
 
-  if matchingOSes.count > 1
-    puts matchingOSes
-    exit
-  elsif matchingOSes.empty?
-    show_no_match(string)
+  devicePairs = matchingOSes
+    .map{ |os| os.devices.values.map{ |d| {:os => os, :device => d} } }
+    .flatten
+
+  # try finding a strict match first (disambiguate "iPad Air" from "iPad Air 2")
+  matchingDevices = devicePairs
+    .select{ |p| p[:device].name == devicePattern }
+
+  # find partial matches otherwise
+  if matchingDevices.empty?
+    matchingDevices = devicePairs
+      .select{ |p| p[:device].name.include? (devicePattern || "") }
   end
-
-  osDevices = matchingOSes.first
-
-  matchingDevices = osDevices.devices.values
-    .select { |device| device.name.include? (devicePattern || "") }
 
   if matchingDevices.count > 1
-    puts matchingDevices
-    exit
-  elseif matchingDevices.empty?
-    show_no_match(string)
-  end
+    unless devicePattern == nil
+      if matchingOSes.count > 1
+        puts matchingDevices.map{ |p| "#{p[:device]} (#{p[:os].id})" }
+        exit
+      else
+        puts matchingDevices.map{ |p| p[:device] }
+        exit
+      end
+    else
+      puts matchingOSes
+      exit
+    end
 
-  device = matchingDevices.first
-  bundleInfos = parseInstalledBundles(device)
+  elsif matchingDevices.count == 1
+    device = matchingDevices.first[:device]
+    bundleInfos = parseInstalledBundles(device)
 
-  unless bundleInfos.empty?
-    puts bundleInfos.values
-    exit
+    unless bundleInfos.empty?
+      puts bundleInfos.values
+      exit
+    else
+      puts "Could not find bundles installed on #{device} (#{matchingDevices.first[:os].id})"
+      exit 1
+    end
+
   else
-    puts "Could not find bundles installed on #{device}"
-    exit 1
+    show_no_match(string)
   end
 end
 
@@ -534,4 +548,5 @@ if @options[:command] == :echo
 end
 
 `open "#{resultPath}"`
+exit
 #---------------------------------------------------------------------------------------------------
