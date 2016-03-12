@@ -10,11 +10,154 @@ end
 
 require 'xcsim'
 
-parser = OptionParser.new do |opts|
-  opts.banner = "Usage: xcsim [options] [bundleID]"
+def banner
+<<-END_BANNER
+xcsim is a command-line utility to simplify opening iOS Simulator application directories in Finder.
+iOS Simulator uses UUIDs heavily for naming its directories, which makes them not really readable
+by human eye. Consider for example:
 
-  opts.on_tail("-h", "--help", "Print this message") do
-    puts opts
+    /Users/User/Library/Developer/CoreSimulator/Devices/FC138577-990F-4069-9AB1-6D847B8529BD/data/
+    Containers/Data/Application/E34BF950-B343-4C73-B50F-EEEA0E34BFAC
+
+Suppose you have an iOS application with bundle ID 'com.yourcompany.appname' and want to peek
+into its Documents folder, which is stored in iPhone 5s (iOS 9.2) simulator. Finding the right
+directory could be a tedious task. With xcsim it is as easy as
+
+    xcsim --os "iOS 9.2" --device "iPhone 5s" com.yourcompany.appname
+
+or even as just
+
+    xcsim com.yourcompany.appname
+
+if it happens that default OS and device values are enough for your needs.
+
+In case you're not sure which exact simulator your app is installed on, you can use xcsim to list
+all present simulators by OS type, device name and view bundle IDs of the applications installed
+on them.
+
+By default xcsim invokes the `open` command to open the application data directory in Finder. By
+providing the `--app` option you can open application bundle directory instead. Using `--echo`
+option will print the full path to the selected directory instead of opening Finder.
+
+Usage: xcsim [options] [bundleID]
+
+END_BANNER
+end
+
+
+
+def help_list
+<<-END_LIST_HELP
+Usage: xcsim --list [OS], [DEVICE]
+
+List option allows listing available simulators/OS versions or bundle IDs of installed apps.
+Actual output of the list option depends on the parameters provided. Both parameters are optional,
+and if both present, should be separated by a comma.
+
+Without parameters `xcsim --list` prints all iOS simulator OS versions available with respective
+count of installed devices for each of the OS:
+
+  xcsim --list
+
+    iOS 8.0 (6 devices)
+    iOS 8.3 (5 devices)
+    iOS 9.0 (6 devices)
+    iOS 9.1 (4 devices)
+    iOS 9.2 (10 devices)
+
+Both OS and DEVICE parameters can be used to partially match existing simulators and print the
+matching results. Considering the example above, we could receive the following outputs:
+
+  xcsim --list 9                      # note partial match on OS version
+
+    iOS 9.0 (6 devices)
+    iOS 9.1 (4 devices)
+    iOS 9.2 (10 devices)
+
+  xcsim --list 9.1                    # exact match yields list of devices for the given OS version
+
+    iPhone 4s
+    iPhone 5s
+    iPhone 6 Plus
+    iPhone 6s Plus
+
+  xcsim --list iPad                   # partial match on device type, lists devices with OS versions
+
+    iPad 2 (iOS 8.0)
+    iPad Air (iOS 8.0)
+    iPad Air (iOS 8.3)
+    iPad Air (iOS 9.0)
+    iPad 2 (iOS 9.2)
+    iPad Air (iOS 9.2)
+    iPad Air 2 (iOS 9.2)
+
+  xcsim --list iOS 9.2, iPad Air 2    # exact device match lists bundle IDs of installed apps
+
+    com.yourcompany.helloapp
+    com.yourcompany.otherapp
+END_LIST_HELP
+end
+
+
+def help_os
+<<-END_OS_HELP
+Usage: xcsim --os "iOS 9.2" com.yourcompany.appname
+
+Sets the OS version to work with when searching for bundle ID (needs to be an exact match, i.e.
+partial matches such as "iOS" or "iOS 9" are not allowed)
+
+If omitted, a default OS will be used instead (#{XCSim::defaultOSName})
+END_OS_HELP
+end
+
+
+def help_device
+<<-END_DEVICE_HELP
+Usage: xcsim --device "iPhone 5s" com.yourcompany.appname
+
+Sets the device type to work with when searching for bundle ID (needs to be an exact match, i.e.
+partial matches such as "iPhone" are not allowed)
+
+If omitted, a default device will be used instead (#{XCSim::defaultDeviceName})
+END_DEVICE_HELP
+end
+
+
+def help_app
+<<-END_APP_HELP
+Usage: xcsim --app com.yourcompany.appname
+
+Selects application bundle directory instead of application data directory (which is default).
+END_APP_HELP
+end
+
+
+def help_echo
+<<-END_ECHO_HELP
+Usage: xcsim --echo com.yourcompany.appname
+
+Prints the selected directory path instead of opening it.
+END_ECHO_HELP
+end
+
+
+parser = OptionParser.new do |opts|
+  opts.banner = banner
+
+  opts.on_tail("-h", "--help [OPTION]", "Print this message / help for individual options") do |v|
+    if v == "l" || v == "list"
+      puts help_list
+    elsif v == "o" || v == "os"
+      puts help_os
+    elsif v == "d" || v == "device"
+      puts help_device
+    elsif v == "a" || v == "app"
+      puts help_app
+    elsif v == "e" || v == "echo"
+      puts help_echo
+    else
+      puts opts
+    end
     exit
   end
 
@@ -48,7 +191,6 @@ parser = OptionParser.new do |opts|
 end
 
 parser.parse!
-
 
 begin
   if ARGV.count > 1
