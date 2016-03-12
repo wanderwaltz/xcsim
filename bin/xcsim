@@ -1,0 +1,108 @@
+#!/usr/bin/ruby
+require 'optparse'
+
+begin
+  require 'cfpropertylist'
+rescue LoadError
+  puts "require 'cfpropertylist' failed! Consider running 'gem install CFPropertyList'"
+  exit
+end
+
+require 'xcsim'
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: xcsim [options] [bundleID]"
+
+  opts.on_tail("-h", "--help", "Print this message") do
+    puts opts
+    exit
+  end
+
+  opts.on("-l", "--list [OS], [DEVICE]",
+    "List simulator OS, devices, app bundle IDs") do |v|
+      @command = :list
+      @argument = ([v] + ARGV).join(" ")
+  end
+
+  opts.on("-o", "--os 'TYPE VERSION'",
+    "Select simulator OS (default: '#{XCSim::defaultOSName}')") do |v|
+      @argument ||= {}
+      @argument[:os] = v
+  end
+
+  opts.on("-d", "--device 'TYPE'",
+    "Select simulator device (default: '#{XCSim::defaultDeviceName}')") do |v|
+      @argument ||= {}
+      @argument[:device] = v
+  end
+
+  opts.on("-a", "--app", "Select application container directory instead of data directory") do |v|
+    @argument ||= {}
+    @argument[:dir] = :app
+  end
+
+  opts.on("-e", "--echo", "Echo the selected directory instead of opening it") do |v|
+    @argument ||= {}
+    @argument[:output] = :echo
+  end
+end
+
+parser.parse!
+
+
+begin
+  if ARGV.count > 1
+    raise ArgumentError
+  end
+
+  @command ||= :bundle
+  @argument ||= {}
+
+  @argument[:bundleID] ||= ARGV.first
+
+  result = xcsim(@command, @argument)
+
+  case @command
+  when :list
+    unless result.empty?
+      puts XCSim::reportFromDeviceList(result)
+    else
+      puts "ERROR: Could not find simulators matching '#{@argument}'!\n"
+      puts parser
+      exit 1
+    end
+
+  when :bundle
+    path = (@argument[:dir] == :app) ? result.bundlePath : result.dataPath
+
+    if @argument[:output] == :echo
+      puts path
+    else
+      `open #{path}`
+    end
+  end
+
+  exit
+
+rescue XCSim::NonUniqueBundleIDError => error
+  puts "ERROR: Multiple data directories matching bundle ID '#{error.bundleID}' on #{error.deviceID} " +
+       "found:"
+  puts error.directories
+  exit 1
+
+rescue XCSim::OSNotFoundError => error
+  puts "ERROR: Unknown OS '#{error.name}'"
+  exit 1
+
+rescue XCSim::DeviceNotFoundError => error
+  puts "ERROR: Unknown device '#{error.name}' for OS '#{error.os.id}'"
+  exit 1
+
+rescue XCSim::BundleNotFoundError => error
+  puts "Unknown bundle ID '#{error.bundleID}' on #{error.device.name} (#{error.os.id})"
+  exit 1
+
+rescue ArgumentError
+  puts parser
+  exit
+end
