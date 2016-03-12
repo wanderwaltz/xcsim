@@ -193,14 +193,16 @@ end
 parser.parse!
 
 begin
-  if ARGV.count > 1
-    raise ArgumentError
+  if @command == nil
+    if ARGV.count > 1
+      raise ArgumentError
+    end
+
+    @command ||= :bundle
+    @argument ||= {}
+
+    @argument[:bundleID] ||= ARGV.first
   end
-
-  @command ||= :bundle
-  @argument ||= {}
-
-  @argument[:bundleID] ||= ARGV.first
 
   result = xcsim(@command, @argument)
 
