@@ -27,58 +27,58 @@ METADATA_ID = "MCMMetadataIdentifier"
 # OSID is a pair of OS type (iOS, watchOS, tvOS) and version
 #---------------------------------------------------------------------------------------------------
 class OSID
-    attr_reader :type, :version
-    @@PREFIX = "com.apple.CoreSimulator.SimRuntime."
+  attr_reader :type, :version
+  @@PREFIX = "com.apple.CoreSimulator.SimRuntime."
 
-    def self.fromPrefixedString(string)
-        unless string.start_with? @@PREFIX
-            return nil
-        end
-
-        components = string.sub(@@PREFIX, "").split("-")
-        type = components.first
-        version = components[1..-1].join(".")
-
-        return OSID.new(type, version)
+  def self.fromPrefixedString(string)
+    unless string.start_with? @@PREFIX
+      return nil
     end
 
-    def self.fromString(string)
-        components = string.split(" ")
-        type = components.first
-        version = components[1..-1].join(".")
+    components = string.sub(@@PREFIX, "").split("-")
+    type = components.first
+    version = components[1..-1].join(".")
 
-        return OSID.new(type, version)
-    end
+    return OSID.new(type, version)
+  end
 
-    def initialize(type, version)
-        @type = type
-        @version = version
-    end
+  def self.fromString(string)
+    components = string.split(" ")
+    type = components.first
+    version = components[1..-1].join(".")
 
-    def inspect
-        "#{@type} #{@version}"
-    end
+    return OSID.new(type, version)
+  end
 
-    def to_s
-        inspect
-    end
+  def initialize(type, version)
+    @type = type
+    @version = version
+  end
 
-    def key
-        "#{@@PREFIX}#{@type}-#{@version.gsub(".","-")}"
-    end
+  def inspect
+    "#{@type} #{@version}"
+  end
 
-    include Comparable
-    def <=>(other)
-        @version <=> other.version
-    end
+  def to_s
+    inspect
+  end
 
-    def hash
-        inspect.hash
-    end
+  def key
+    "#{@@PREFIX}#{@type}-#{@version.gsub(".","-")}"
+  end
 
-    def eql?(other)
-        inspect.eql?(other.inspect)
-    end
+  include Comparable
+  def <=>(other)
+    @version <=> other.version
+  end
+
+  def hash
+    inspect.hash
+  end
+
+  def eql?(other)
+    inspect.eql?(other.inspect)
+  end
 end
 #---------------------------------------------------------------------------------------------------
 
@@ -88,31 +88,29 @@ end
 # OSDevices
 #---------------------------------------------------------------------------------------------------
 class OSDevices
-    attr_reader :id, :devices
+  attr_reader :id, :devices
 
-    def initialize(id, devices)
-        @id = id
+  def initialize(id, devices)
+    @id = id
 
-        devicesHash = {}
-        devices.each do |d|
-            devicesHash[d.name] = d
-        end
+    devicesHash = {}
+    devices.each{ |d| devicesHash[d.name] = d }
 
-        @devices = devicesHash
-    end
+    @devices = devicesHash
+  end
 
-    def inspect
-        "#{@id.inspect} (#{@devices.count} devices)"
-    end
+  def inspect
+    "#{@id.inspect} (#{@devices.count} devices)"
+  end
 
-    def to_s
-        inspect
-    end
+  def to_s
+    inspect
+  end
 
-    include Comparable
-    def <=>(other)
-        @id <=> other.id
-    end
+  include Comparable
+  def <=>(other)
+    @id <=> other.id
+  end
 end
 #---------------------------------------------------------------------------------------------------
 
@@ -122,50 +120,50 @@ end
 # DeviceID
 #---------------------------------------------------------------------------------------------------
 class DeviceID
-    attr_reader :name, :guid
-    @@PREFIX = "com.apple.CoreSimulator.SimDeviceType."
+  attr_reader :name, :guid
+  @@PREFIX = "com.apple.CoreSimulator.SimDeviceType."
 
-    def self.fromPrefixedString(string, guid)
-        unless string.start_with? @@PREFIX
-            return nil
-        end
-
-        name = string.sub(@@PREFIX, "").gsub("-", " ")
-        return DeviceID.new(name, guid)
+  def self.fromPrefixedString(string, guid)
+    unless string.start_with? @@PREFIX
+      return nil
     end
 
-    def initialize(name, guid)
-        @name = name
-        @guid = guid
-    end
+    name = string.sub(@@PREFIX, "").gsub("-", " ")
+      return DeviceID.new(name, guid)
+  end
 
-    def appBundlesPath
-        "#{SIMULATORS_ROOT}/#{@guid}/#{DEVICE_APP_BUNDLES_RELATIVE_PATH}"
-    end
+  def initialize(name, guid)
+    @name = name
+    @guid = guid
+  end
 
-    def appDataPath
-        "#{SIMULATORS_ROOT}/#{@guid}/#{DEVICE_APP_DATA_RELATIVE_PATH}"
-    end
+  def appBundlesPath
+    "#{SIMULATORS_ROOT}/#{@guid}/#{DEVICE_APP_BUNDLES_RELATIVE_PATH}"
+  end
 
-    def inspect
-        @name
-    end
+  def appDataPath
+    "#{SIMULATORS_ROOT}/#{@guid}/#{DEVICE_APP_DATA_RELATIVE_PATH}"
+  end
 
-    def to_s
-        inspect
-    end
+  def inspect
+    @name
+  end
 
-    def key
-        "#{@@PREFIX}#{@name.gsub(" ","-")}"
-    end
+  def to_s
+    inspect
+  end
 
-    def hash
-        inspect.hash
-    end
+  def key
+    "#{@@PREFIX}#{@name.gsub(" ","-")}"
+  end
 
-    def eql?(other)
-        inspect.eql?(other.inspect)
-    end
+  def hash
+    inspect.hash
+  end
+
+  def eql?(other)
+    inspect.eql?(other.inspect)
+  end
 end
 #---------------------------------------------------------------------------------------------------
 
@@ -175,21 +173,21 @@ end
 # Bundle Info
 #---------------------------------------------------------------------------------------------------
 class BundleInfo
-    attr_reader :bundleID, :bundlePath, :dataPath
+  attr_reader :bundleID, :bundlePath, :dataPath
 
-    def initialize(bundleID, bundlePath, dataPath)
-        @bundleID = bundleID
-        @bundlePath = bundlePath
-        @dataPath = dataPath
-    end
+  def initialize(bundleID, bundlePath, dataPath)
+    @bundleID = bundleID
+    @bundlePath = bundlePath
+    @dataPath = dataPath
+  end
 
-    def inspect
-        @bundleID
-    end
+  def inspect
+    @bundleID
+  end
 
-    def to_s
-        inspect
-    end
+  def to_s
+    inspect
+  end
 end
 #---------------------------------------------------------------------------------------------------
 
@@ -199,37 +197,34 @@ end
 # device_set.plist parser
 #---------------------------------------------------------------------------------------------------
 def parseDeviceSet(path)
-    plist = CFPropertyList::List.new(:file => path)
-    plist = CFPropertyList.native_types(plist.value)
-    defaultDevices = plist["DefaultDevices"]
+  plist = CFPropertyList::List.new(:file => path)
+  plist = CFPropertyList.native_types(plist.value)
+  defaultDevices = plist["DefaultDevices"]
 
-    osIDs = defaultDevices
-        .keys
-        .map{|s| OSID.fromPrefixedString(s) }
-        .select{|id| id != nil}
+  osIDs = defaultDevices
+    .keys
+    .map{|s| OSID.fromPrefixedString(s) }
+    .select{|id| id != nil}
 
-    oses = osIDs.map do |id|
-        osDevices = defaultDevices[id.key]
-        devices = osDevices
-            .keys
-            .map{ |s| DeviceID.fromPrefixedString(s, osDevices[s])}
-            .select{ |device| device != nil }
-            .select{ |device| File.directory? device.appBundlesPath }
+  oses = osIDs.map do |id|
+    osDevices = defaultDevices[id.key]
+    devices = osDevices
+      .keys
+      .map{ |s| DeviceID.fromPrefixedString(s, osDevices[s])}
+      .select{ |device| device != nil }
+      .select{ |device| File.directory? device.appBundlesPath }
 
-        (devices.count > 0) ? OSDevices.new(id, devices) : nil
-    end
-    .select{ |os| os != nil }
+      (devices.count > 0) ? OSDevices.new(id, devices) : nil
+  end
+  .select{ |os| os != nil }
 
-    osHash = {}
+  osHash = {}
+  oses.each{ |os| osHash[os.id] = os }
 
-    oses.each do |os|
-        osHash[os.id] = os
-    end
-
-    osHash
+  osHash
 end
 
-devicesByOS = parseDeviceSet("#{SIMULATORS_ROOT}/#{DEVICE_SET_PLIST}")
+@devicesByOS = parseDeviceSet("#{SIMULATORS_ROOT}/#{DEVICE_SET_PLIST}")
 #---------------------------------------------------------------------------------------------------
 
 
@@ -238,110 +233,250 @@ devicesByOS = parseDeviceSet("#{SIMULATORS_ROOT}/#{DEVICE_SET_PLIST}")
 # simulator apps list parser
 #---------------------------------------------------------------------------------------------------
 def findBundleDataPath(deviceID, bundleID)
-    path = deviceID.appDataPath
-    subdirs = Dir.entries(path).select do |entry|
-        File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
-    end
+  path = deviceID.appDataPath
+  subdirs = Dir.entries(path).select do |entry|
+    File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
+  end
 
-    metadataPairs = subdirs.map do |dir|
-        plist = CFPropertyList::List.new(:file => "#{path}/#{dir}/#{BUNDLE_METADATA_PLIST}")
-        plist = CFPropertyList.native_types(plist.value)
+  metadataPairs = subdirs.map do |dir|
+    plist = CFPropertyList::List.new(:file => "#{path}/#{dir}/#{BUNDLE_METADATA_PLIST}")
+    plist = CFPropertyList.native_types(plist.value)
 
-        { :plist => plist, :dir => "#{path}/#{dir}" }
-    end
+    { :plist => plist, :dir => "#{path}/#{dir}" }
+  end
 
-    result = metadataPairs.select { |pair| pair[:plist][METADATA_ID] == bundleID }
+  result = metadataPairs.select{ |pair| pair[:plist][METADATA_ID] == bundleID }
 
-    if result.count > 1
-        puts "Multiple data directories matching bundle ID '#{bundleID}' " +
-             "found: #{result.map{|pair| pair[:dir]}}"
-        exit 1
-    end
+  if result.count > 1
+    puts "Multiple data directories matching bundle ID '#{bundleID}' " +
+         "found: #{result.map{|pair| pair[:dir]}}"
+    exit 1
+  end
 
-    result.first[:dir]
+  result.first[:dir]
 end
 
 def parseInstalledBundles(deviceID)
-    path = deviceID.appBundlesPath
-    subdirs = Dir.entries(path).select do |entry|
-        File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
-    end
+  path = deviceID.appBundlesPath
+  subdirs = Dir.entries(path).select do |entry|
+    File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
+  end
 
-    bundlePlists = subdirs.map do |dir|
-        plist = CFPropertyList::List.new(:file => "#{path}/#{dir}/#{BUNDLE_METADATA_PLIST}")
-        plist = CFPropertyList.native_types(plist.value)
+  bundlePlists = subdirs.map do |dir|
+    plist = CFPropertyList::List.new(:file => "#{path}/#{dir}/#{BUNDLE_METADATA_PLIST}")
+    plist = CFPropertyList.native_types(plist.value)
 
-        { :plist => plist, :dir => "#{path}/#{dir}" }
-    end
+    { :plist => plist, :dir => "#{path}/#{dir}" }
+  end
 
-    bundleInfos = bundlePlists.map do |pair|
-        bundleID = pair[:plist][METADATA_ID]
-        bundlePath = pair[:dir]
-        dataPath = findBundleDataPath(deviceID, bundleID)
-        BundleInfo.new(bundleID, bundlePath, dataPath)
-    end
+  bundleInfos = bundlePlists.map do |pair|
+    bundleID = pair[:plist][METADATA_ID]
+    bundlePath = pair[:dir]
+    dataPath = findBundleDataPath(deviceID, bundleID)
+    BundleInfo.new(bundleID, bundlePath, dataPath)
+  end
 
-    bundleInfosHash = {}
+  bundleInfosHash = {}
+  bundleInfos.each{ |info| bundleInfosHash[info.bundleID] = info }
 
-    bundleInfos.each do |info|
-        bundleInfosHash[info.bundleID] = info
-    end
-
-    bundleInfosHash
+  bundleInfosHash
 end
 #---------------------------------------------------------------------------------------------------
+
+
+
+#---------------------------------------------------------------------------------------------------
+# helper funcrions
+#---------------------------------------------------------------------------------------------------
+@options = {}
+
+def os_by_name(osName)
+  osID = OSID.fromString(osName)
+
+  osDevices = @devicesByOS[osID]
+
+  if osDevices == nil
+    puts "Unknown OS '#{osName}'"
+    exit 1
+  end
+
+  return osDevices
+end
+
+
+def matching_oses(namePattern)
+  if namePattern == nil
+    return @devicesByOS.values
+  end
+
+  return @devicesByOS.values.select{ |os| os.id.to_s.include? namePattern }
+end
+
+
+def device_by_name(osDevices, deviceName)
+  device = osDevices.devices[deviceName]
+
+  if device == nil
+    puts "Available simulators for #{osDevices.id}:"
+    puts osDevices.devices.keys.map {|s| " " + s }
+    exit 1
+  end
+
+  device
+end
+
+
+DEFAULT_OS_NAME = @devicesByOS.keys.max.to_s
+DEFAULT_DEVICE_NAME = "iPhone 5s"
+
+def selected_os_name
+  @options[:selected_os_name] || DEFAULT_OS_NAME
+end
+
+def selected_device_name
+  @options[:selected_device_name] || DEFAULT_DEVICE_NAME
+end
+#---------------------------------------------------------------------------------------------------
+
 
 
 #---------------------------------------------------------------------------------------------------
 # options parser
 #---------------------------------------------------------------------------------------------------
-options = {}
-parser = OptionParser.new do |opts|
-  opts.banner = "Usage: xcsim [options]"
+@parser = OptionParser.new do |opts|
+  opts.banner = "Usage: xcsim [options] [bundleID]"
 
-  opts.on("-h", "--help", "Print this message") do
+  opts.on_tail("-h", "--help", "Print this message") do
     puts opts
     exit
   end
 
-  opts.on("--list-os", "List available simulator OS") do |v|
-    options[:list_oses] = v
+  opts.on("-l", "--list [OS], [DEVICE]",
+    "List simulator OS, devices, app bundle IDs") do |v|
+      @options[:command] = :list
+      @options[:argument] = v || :os_versions
   end
 
-  opts.on("--list-devices", "List available simulator devices for the selected OS") do |v|
-    options[:list_devices] = v
+  opts.on("-o", "--os 'TYPE VERSION'",
+    "Select simulator OS (default: '#{DEFAULT_OS_NAME}')") do |v|
+      @options[:selected_os_name] = v
   end
 
-  opts.on("--default-os", "Display default simulator OS") do |v|
-    options[:print_default_os] = v
+  opts.on("-d", "--device 'TYPE'",
+    "Select simulator device (default: '#{DEFAULT_DEVICE_NAME}')") do |v|
+      @options[:selected_device_name] = v
   end
 
-  opts.on("-o", "--os 'TYPE VERSION'", "Specify OS to work with (default: the newest)") do |v|
-    options[:os] = v
+  opts.on("-a", "--app", "Select application container directory instead of data directory") do |v|
+    @options[:argument] = :app_dir
   end
 
-  opts.on("-d", "--device 'TYPE'", "Select a simulator to work with (default: iPhone 5s)") do |v|
-    options[:device] = v
-  end
-
-  opts.on("-b", "--bundle-id ID", "Select an app to work with") do |v|
-    options[:bundle] = v
-  end
-
-  opts.on("--data", "print application data directory (default)") do |v|
-    options[:data_dir] = v
-  end
-
-  opts.on("--bundle", "print bundle directory") do |v|
-    options[:bundle_dir] = v
-  end
-
-  opts.on("--open", "open the selected directory in Finder") do |v|
-    options[:open] = v
+  opts.on("-e", "--echo", "Echo the selected directory instead of opening it") do |v|
+    @options[:command] = :echo
   end
 end
 
-parser.parse!
+@parser.parse!
+#---------------------------------------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------------------------------------
+# commands
+#---------------------------------------------------------------------------------------------------
+def show_help
+  puts @parser
+  exit
+end
+
+def show_no_match(string)
+  puts "Could not find simulators matching '#{string}'!\n"
+  show_help
+end
+
+def list_os_versions
+  puts @devicesByOS.values.map { |os| " " + os.to_s }
+  exit
+end
+
+def list_matching(string)
+  components = string.split(",").map{ |s| s.strip }
+
+  case components.count
+  when 2
+    # assume first pattern is always for OS,
+    # second - for device
+    osPattern = components.first
+    devicePattern = components.last
+
+  when 1
+    # we don't know whether the pattern is for OS or device,
+    # try OS first
+    osPattern = components.first
+    devicePattern = nil
+    matchingOSes = matching_oses(osPattern)
+
+    # if no OSes match, assume the pattern is for device
+    if matchingOSes.empty?
+      osPattern = nil
+      matchingOSes = nil
+      devicePattern = components.first
+    end
+
+  else
+    show_help
+
+  end
+
+  matchingOSes ||= matching_oses(osPattern)
+
+  if matchingOSes.count > 1
+    puts matchingOSes
+    exit
+  elsif matchingOSes.empty?
+    show_no_match(string)
+  end
+
+  osDevices = matchingOSes.first
+
+  matchingDevices = osDevices.devices.values
+    .select { |device| device.name.include? (devicePattern || "") }
+
+  if matchingDevices.count > 1
+    puts matchingDevices
+    exit
+  elseif matchingDevices.empty?
+    show_no_match(string)
+  end
+
+  device = matchingDevices.first
+  bundleInfos = parseInstalledBundles(device)
+
+  unless bundleInfos.empty?
+    puts bundleInfos.values
+    exit
+  else
+    puts "Could not find bundles installed on #{device}"
+    exit 1
+  end
+end
+
+def command_list
+  # cannot mix --list with other options
+  if @options.count > 2
+    show_help
+  end
+
+  arg = @options[:argument]
+
+  case arg
+  when :os_versions
+    list_os_versions
+
+  else
+    list_matching(([arg.to_s] + ARGV).join(" "))
+
+  end
+end
 #---------------------------------------------------------------------------------------------------
 
 
@@ -349,71 +484,54 @@ parser.parse!
 #---------------------------------------------------------------------------------------------------
 # main
 #---------------------------------------------------------------------------------------------------
-if options[:list_oses]
-    puts "Available simulator OS:"
-    puts devicesByOS.keys.map { |id| " " + id.to_s }
-    exit
+case @options[:command]
+when :list
+  command_list
+
 end
 
-if options[:print_default_os]
-    puts devicesByOS.keys.max
-    exit
+if ARGV.empty? || ARGV.count > 1
+  show_help
 end
 
-osName = options[:os] || devicesByOS.keys.max.to_s
-osID = OSID.fromString(osName)
+bundleID = ARGV.first
+osDevices = os_by_name(selected_os_name)
+device = device_by_name(osDevices, selected_device_name)
 
-osDevices = devicesByOS[osID]
-
-if osDevices == nil
-    puts "Unknown OS '#{osName}'"
-    exit 1
-end
-
-deviceName = options[:device] || "iPhone 5s"
-device = osDevices.devices[deviceName]
-
-if device == nil || options[:list_devices]
-    puts "Available simulators for #{osID}:"
-    puts osDevices.devices.keys.map {|s| " " + s }
-    exit
-end
-
-bundleID = options[:bundle]
 bundleInfos = parseInstalledBundles(device)
 bnulde = nil
 
 if bundleID != nil
-    matchingBundles = bundleInfos.values.select{ |bundle| bundle.bundleID.end_with? bundleID }
+  matchingBundles = bundleInfos.values.select{ |bundle| bundle.bundleID.end_with? bundleID }
 
-    if matchingBundles.count > 1
-        puts "Multiple bundles matching ID '#{bundleID}' found: #{matchingBundles}!"
-        exit 1
-    elsif matchingBundles.count == 1
-        bundle = matchingBundles.first
-    end
+  if matchingBundles.count > 1
+    puts "Multiple bundles matching ID '#{bundleID}' found: #{matchingBundles}!"
+    exit 1
+  elsif matchingBundles.count == 1
+    bundle = matchingBundles.first
+  end
 end
 
 if bundle == nil
-    unless bundleID == nil
-        puts "Unknown bundle ID '#{bundleID}'"
-    end
+  unless bundleID == nil
+    puts "Unknown bundle ID '#{bundleID}'"
+  end
 
-    puts "Applications installed on #{device} #{osID} simulator:"
-    puts bundleInfos.keys.map { |b| " " + b.to_s }
-    exit 1
+  puts "Applications installed on #{device} #{osDevices.id} simulator:"
+  puts bundleInfos.keys.map { |b| " " + b.to_s }
+  exit 1
 end
 
 resultPath = bundle.dataPath
 
-if options[:bundle_dir]
-    resultPath = bundle.bundlePath
+if @options[:argument] == :app_dir
+  resultPath = bundle.bundlePath
 end
 
-if options[:open]
-    `open "#{resultPath}"`
-    exit
+if @options[:command] == :echo
+  puts resultPath
+  exit
 end
 
-puts resultPath
+`open "#{resultPath}"`
 #---------------------------------------------------------------------------------------------------
