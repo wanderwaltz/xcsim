@@ -3,41 +3,62 @@
 require_relative 'rbAppBundles'
 
 module XCSim
+  # An aggregate object containing information on a single iOS Simulator device
+  # returned by GetDeviceList#withPattern or GetDeviceList#allDevices
   class DeviceListItem
+
+    # An OSDevices object corresponding to the device OS version
     attr_reader :os
+
+    # A DeviceID object corresponding to the device
     attr_reader :device
+
+    # An array of BundleInfo objects corresponding to the applications installed on the
+    # simulator in question
     attr_reader :bundles
 
+    # Initializes a DeviceListItem instance with a given os, device and bundles array
     def initialize(os, device, bundles)
       @os = os
       @device = device
       @bundles = bundles
     end
 
+    # Returns a string in <tt>"iPhone 5s (iOS 9.2)"</tt> format
     def fullName
       "#{device.name} (#{os.id})"
     end
 
+    # Returns device name
     def shortName
       device.name
     end
 
+    # Same as #fullName
     def inspect
       fullName
     end
 
+    # Same as #inspect
     def to_s
       inspect
     end
   end
 
 
-
+  # A class encapsulating logic of searching available OS verions / device models / installed apps
+  # in #xcsim function (i.e. implementation of #xcsim list mode)
   class GetDeviceList
+
+    # Initializes a GetDeviceList instance with a given device set of OSDevices class
     def initialize(deviceSet)
       @deviceSet = deviceSet
     end
 
+    # Performs search for the iOS simulators matching the provided pattern.
+    # See #xcsim description (List Mode section) for more info.
+    #
+    # Returns an array of DeviceListItem
     def withPattern(pattern)
       if pattern.length == 0
         return allDevices
@@ -64,6 +85,7 @@ module XCSim
       end
     end
 
+    # Returns an array of DeviceListItem corresponding to all installed iOS Simulators
     def allDevices
       @deviceSet.values.map do |os|
         os.devices.values.map do |device|

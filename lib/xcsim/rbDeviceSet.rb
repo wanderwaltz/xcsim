@@ -43,14 +43,20 @@ module XCSim
     osHash
   end
 
+  # Returns default device set of OSDevices class (as parsed by #parseDeviceSet with default
+  # iOS Simulators path)
   def self.deviceSet
     @@deviceSet
   end
 
+  # Returns default OS name for use in #xcsim bundle mode when no +:os+ option is provided.
+  # Selects the OS with the highest version number as the default.
   def self.defaultOSName
     @@deviceSet.keys.max.to_s
   end
 
+  # Returns the default device name for use in #xcsim bundle mode when no +:device+
+  # option is provided.
   def self.defaultDeviceName
     "iPhone 5s"
   end

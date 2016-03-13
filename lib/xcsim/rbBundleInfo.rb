@@ -1,6 +1,66 @@
 # -*- coding: utf-8 -*-
 
 module XCSim
+  # An error, which is raised by GetBundle class when iOS Simulator OS version specified by
+  # the +:os+ option could not be found.
+  class OSNotFoundError < RuntimeError
+
+    # Name of the OS provided in +:os+ option
+    attr_reader :name
+
+    # Initializes an OSNotFoundError instance with the given OS name
+    def initialize(name)
+      @name = name
+    end
+  end
+
+
+
+  # An error, which is raised by GetBundle class when iOS Simulator device model specified by
+  # the +:device+ option could not be found.
+  class DeviceNotFoundError < RuntimeError
+
+    # An OSDevices object corresponding to the OS version, which was used when searching
+    # for the device
+    attr_reader :os
+
+    # Device name specified in the +:device+ option
+    attr_reader :name
+
+    # Initializes a DeviceNotFoundError instance with a given os and name
+    def initialize(os, name)
+      @os = os
+      @name = name
+    end
+  end
+
+
+
+  # An error, which is raised by GetBundle class when bundle ID specified by +:bundleID+ option
+  # has not been found (even with partial match) on the device
+  class BundleNotFoundError < RuntimeError
+
+    # An OSDevices object corresponding to the OS version, which was used when searching
+    # for the application bundle
+    attr_reader :os
+
+    # A DeviceID object corresponding to the device, which was used when searching for the
+    # application bundle
+    attr_reader :device
+
+    # Bundle ID provided in +:bundleID+ option
+    attr_reader :bundleID
+
+    # Initializes a BundleNotFoundError instance with a given os, device and bundleID
+    def initialize(os, device, bundleID)
+      @os = os
+      @device = device
+      @bundleID = bundleID
+    end
+  end
+
+
+
   # Contains information about a certain application bundle
   class BundleInfo
 
@@ -29,15 +89,22 @@ module XCSim
     def to_s
       inspect
     end
-  end # class BundleInfo
+  end
 
 
 
+  # A class encapsulating logic of searching for an applciation bundle in #xcsim function
+  # (i.e. implementation of #xcsim bundle mode)
   class GetBundle
+    # Initializes a GetBundle instance with a given device set of OSDevices type
     def initialize(deviceSet)
       @deviceSet = deviceSet
     end
 
+    # Performs search for the application bundle matching the provided options.
+    # See #xcsim description (Bundle Mode section) for more info.
+    #
+    # Returns a BundleInfo object
     def withOptions(options)
       bundleID = options[:bundleID]
 
@@ -69,41 +136,7 @@ module XCSim
       os.devices[name] || (raise DeviceNotFoundError.new(os, name))
     end
 
-  end # class GetBundle
-
-
-  class OSNotFoundError < RuntimeError
-    attr_reader :name
-
-    def initialize(name)
-      @name = name
-    end
   end
-
-
-  class DeviceNotFoundError < RuntimeError
-    attr_reader :os
-    attr_reader :name
-
-    def initialize(os, name)
-      @os = os
-      @name = name
-    end
-  end
-
-
-  class BundleNotFoundError < RuntimeError
-    attr_reader :os
-    attr_reader :device
-    attr_reader :bundleID
-
-    def initialize(os, device, bundleID)
-      @os = os
-      @device = device
-      @bundleID = bundleID
-    end
-  end
-
 end # module XCSim
 
 # eof

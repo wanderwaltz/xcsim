@@ -2,6 +2,14 @@
 
 module XCSim
 
+  # Prepares a more human-readable report from an array of DeviceListItem objects.
+  #
+  # Depending on the unique OS versions and device models referenced by the +list+ items,
+  # may return one of the following results:
+  #
+  # List of application bundles:: When +list+ contains a single item
+  # List of device names::        When +list+ contains multiple devices from a single OS version
+  # List of OS version strings::  When +list+ contains a multiple devices from multiple OS version
   def self.reportFromDeviceList(list)
     uniqueOSes = list.map{ |item| item.os.id }.uniq
     uniqueDevices = list.map { |item| item.device.name }.uniq
