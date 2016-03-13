@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'xcsim'
-  s.version     = '0.0.0'
+  s.version     = '1.0.0'
   s.date        = '2016-03-13'
   s.summary     = "Open iOS Simulator application/data directories by bundle ID"
   s.description = <<-EOD
