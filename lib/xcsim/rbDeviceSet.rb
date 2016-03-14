@@ -23,19 +23,19 @@ module XCSim
     osIDs = defaultDevices
       .keys
       .map{|s| OSID.fromPrefixedString(s) }
-      .select{|id| id != nil}
+      .compact
 
     oses = osIDs.map do |id|
       osDevices = defaultDevices[id.key]
       devices = osDevices
         .keys
         .map{ |s| DeviceID.fromPrefixedString(s, osDevices[s])}
-        .select{ |device| device != nil }
+        .compact
         .select{ |device| File.directory? device.appBundlesPath }
 
         (devices.count > 0) ? OSDevices.new(id, devices) : nil
     end
-    .select{ |os| os != nil }
+    .compact
 
     osHash = {}
     oses.each{ |os| osHash[os.id] = os }
