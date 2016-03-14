@@ -60,7 +60,7 @@ module XCSim
         nil
       end
     end
-    .select{ |pair| pair != nil }
+    .compact
 
     result = metadataPairs.select{ |pair| pair[:plist][METADATA_ID] == bundleID }
 
@@ -104,7 +104,7 @@ module XCSim
         nil
       end
     end
-    .select { |plist| plist != nil }
+    .compact
 
     bundleInfos = bundlePlists.map do |pair|
       bundleID = pair[:plist][METADATA_ID]
