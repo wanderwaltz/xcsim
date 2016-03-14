@@ -44,6 +44,9 @@ module XCSim
   # otherwise.
   def self.findBundleDataPath(deviceID, bundleID)
     path = deviceID.appDataPath
+
+    return nil unless File.directory? path
+
     subdirs = Dir.entries(path).select do |entry|
       File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
     end
@@ -88,6 +91,9 @@ module XCSim
   # of the bundles.
   def self.parseInstalledBundles(deviceID)
     path = deviceID.appBundlesPath
+
+    return {} unless File.directory? path
+
     subdirs = Dir.entries(path).select do |entry|
       File.directory? File.join(path, entry) and !(entry =='.' || entry == '..')
     end
