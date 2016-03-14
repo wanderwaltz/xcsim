@@ -32,6 +32,7 @@ module XCSim
         .map{ |s| DeviceID.fromPrefixedString(s, osDevices[s])}
         .compact
         .select{ |device| File.directory? device.appBundlesPath }
+        .select{ |device| File.directory? device.appDataPath }
 
         (devices.count > 0) ? OSDevices.new(id, devices) : nil
     end
