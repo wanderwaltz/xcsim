@@ -9,9 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   by using `compact` instead of `select` for filtering `nil` values.
 
 - Resolved https://github.com/wanderwaltz/xcsim/issues/2:
-  -- `XCSim::parseDeviceSet` will now skips simulators without application data directory
+  -- `XCSim::parseDeviceSet` will now skip simulators without application data directory
   -- both `XCSim::parseInstalledBundles` and `XCSim::findBundleDataPath` now check the existence
-     of their wokring deirectories for an early return
+     of their wokring directories for an early return
 
 ### [1.0.0]
 Initial release
