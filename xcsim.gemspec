@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'xcsim'
-  s.version     = '1.0.1'
-  s.date        = '2016-03-13'
+  s.version     = '1.0.2'
+  s.date        = '2016-10-06'
   s.summary     = "Open iOS Simulator application/data directories by bundle ID"
   s.description = <<-EOD
 xcsim is a command-line utility to simplify opening iOS Simulator application/data directories. It's as simple as running `xcsim com.yourcompany.application`.
