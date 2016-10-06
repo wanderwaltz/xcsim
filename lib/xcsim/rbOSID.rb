@@ -44,6 +44,7 @@ module XCSim
     def initialize(type, version)
       @type = type
       @version = version
+      @parsed_version = Gem::Version.new(version)
     end
 
     # Returns a string in <tt>'iOS 9.2'</tt> format
@@ -64,10 +65,10 @@ module XCSim
 
     include Comparable
 
-    # Uses @version for comparison (allows using <tt>Array#max</tt> on arrays of OSID
+    # Uses version for comparison (allows using <tt>Array#max</tt> on arrays of OSID
     # for selecting max version)
     def <=>(other)
-      @version <=> other.version
+      @parsed_version <=> other.parsed_version
     end
 
     # Returns +inspect.hash+
@@ -79,6 +80,9 @@ module XCSim
     def eql?(other)
       @type.eql?(other.type) && @version.eql?(other.version)
     end
+
+    protected
+    attr_reader :parsed_version
 
     private
     @@PREFIX = "com.apple.CoreSimulator.SimRuntime."
